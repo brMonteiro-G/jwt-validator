@@ -1,16 +1,14 @@
 package com.spring.jwt.validator.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.spring.jwt.validator.model.JwtDTO;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "v1/base")
 public class JwtValidadorController {
 
     @PostMapping("/persist")
-    public String myFisrtController() {
+    public String myFisrtController(@RequestBody JwtDTO jwt) {
 
         return "it works";
     }
