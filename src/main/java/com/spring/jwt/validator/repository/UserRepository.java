@@ -21,8 +21,8 @@ public class UserRepository {
         return customer.getEmail();
     }
 
-    public User getCustomerById(String id) {
-        return dynamoDBMapper.load(User.class, id);
+    public Optional<User> getCustomerById(String id) {
+        return Optional.ofNullable(dynamoDBMapper.load(User.class, id));
     }
 
     public User updateCustomer(String id, User customer) {
