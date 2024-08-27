@@ -2,10 +2,13 @@ package com.spring.jwt.validator.repository;
 
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.spring.jwt.validator.mapper.UserMapper;
 import com.spring.jwt.validator.model.User;
+import com.spring.jwt.validator.model.UserDTO;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,15 +17,20 @@ import java.util.Optional;
 @AllArgsConstructor
 @Slf4j
 public class UserRepository {
-    final private DynamoDBMapper dynamoDBMapper;
+
+    private final DynamoDBMapper dynamoDBMapper;
+
 
     public String createCustomer(User customer) {
+
         dynamoDBMapper.save(customer);
         return customer.getEmail();
     }
 
-    public Optional<User> getCustomerById(String id) {
-        return Optional.ofNullable(dynamoDBMapper.load(User.class, id));
+    public Optional<UserDTO> getCustomerById(String id) {
+        var user = UserMapper.convertUserToUserDTO(dynamoDBMapper.load(User.class, id));
+
+        return Optional.ofNullable(user);
     }
 
     public User updateCustomer(String id, User customer) {
@@ -37,6 +45,6 @@ public class UserRepository {
     public String deleteCustomer(String id) {
         User load = dynamoDBMapper.load(User.class, id);
         dynamoDBMapper.delete(load);
-        return load.getId() + " get deleted !";
+        return load.getEmail()+ " get deleted !";
     }
 }
