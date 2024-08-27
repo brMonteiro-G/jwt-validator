@@ -1,6 +1,9 @@
-package com.spring.jwt.validator.configuration;
+package com.spring.jwt.validator.configuration.local;
 
-import com.amazonaws.auth.*;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -9,11 +12,9 @@ import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRep
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("prod")
-public class DynamoDBConfig {
+public class DynamoDBConfigLocal {
 
     @Value("${aws.dynamodb.endpoint}")
     private String dynamodbEndpoint;
@@ -28,7 +29,7 @@ public class DynamoDBConfig {
     @Value("${aws.secretKey}")
     private String amazonAWSSecretKey;
 
-    @Value("${aws.sessionToken}")
+    @Value("3000")
     private String amazonAWSSessionToken;
 
     @Bean
@@ -47,7 +48,11 @@ public class DynamoDBConfig {
                 )
                 .withCredentials(
                         new AWSStaticCredentialsProvider(
-                                WebIdentityTokenCredentialsProvider.create().getCredentials()
+                                new BasicSessionCredentials(
+                                        amazonAWSAccessKey,
+                                        amazonAWSSecretKey,
+                                        amazonAWSSessionToken
+                                )
                         )
                 )
                 .build();
