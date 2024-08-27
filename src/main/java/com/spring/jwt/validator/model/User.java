@@ -16,6 +16,7 @@ import java.util.Collection;
 
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 @DynamoDBTable(tableName = "Users")
 public class User {

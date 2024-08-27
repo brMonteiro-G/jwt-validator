@@ -4,28 +4,30 @@ import com.spring.jwt.validator.model.*;
 import com.spring.jwt.validator.repository.UserRepository;
 import com.spring.jwt.validator.service.AuthenticationService;
 import com.spring.jwt.validator.service.JwtService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "v1/base")
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class JwtValidadorController {
 
     private final JwtService jwtService;
 
     private final AuthenticationService authenticationService;
-    @Autowired
-    private UserRepository userRepository;
 
+    private final UserRepository userRepository;
 
     // get allow list
     @GetMapping("/retrieve")
+    // to do  @PreAuthorize("isFullyAuthenticated() and hasAuthority('admin')")
     public String myFisrtControllerGet() {
         return "it works too";
 
@@ -33,7 +35,7 @@ public class JwtValidadorController {
 
     // login new user and validate jwt generated
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
+    public ResponseEntity<LoginResponse> authenticate(@RequestBody @Valid LoginUserDto loginUserDto) {
         UserDTO authenticatedUser = authenticationService.authenticate(loginUserDto);
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
@@ -45,10 +47,11 @@ public class JwtValidadorController {
 
     // register new user
     @PostMapping("/signup")
-    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
-        //authenticationService.signup(registerUserDto);
-        User registeredUser = new User(UUID.randomUUID().toString(),registerUserDto.getFullName(), registerUserDto.getEmail(), registerUserDto.getPassword());
-        userRepository.createCustomer(registeredUser);
+    // to do adicionar response DTO
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterUserDto registerUserDto) {
+
+        var registeredUser = authenticationService.signup(registerUserDto);
+
         return ResponseEntity.ok(registeredUser);
     }
 
