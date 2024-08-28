@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: 🔄 CI Workflow
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+
+      - name: 📦 Install dependencies
+        run: mvn clean install
+
+      - name: 🛠 Build
+        run: mvn package
+
+      - name: 🧪 Test
+        env:
+          CI: true
+        run: mvn test

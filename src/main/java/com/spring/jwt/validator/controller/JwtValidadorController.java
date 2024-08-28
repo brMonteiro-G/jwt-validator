@@ -33,6 +33,8 @@ public class JwtValidadorController {
 
     }
 
+
+
     // login new user and validate jwt generated
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticate(@RequestBody @Valid LoginUserDto loginUserDto) {
@@ -44,6 +46,8 @@ public class JwtValidadorController {
 
         return ResponseEntity.ok(loginResponse);
     }
+
+
 
     // register new user
     @PostMapping("/signup")
