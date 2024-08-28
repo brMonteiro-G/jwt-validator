@@ -1,0 +1,66 @@
+replicaCount: 3
+
+
+image:
+  repository: keyshelltechs/sample_spring_boot
+  pullPolicy: Always
+
+
+imagePullSecrets: [ ]
+nameOverride: ""
+fullnameOverride: "springboot"
+
+
+serviceAccount:
+  create: true
+  name: "springboot"
+
+
+podAnnotations: { }
+
+
+podSecurityContext: { }
+
+
+securityContext: { }
+
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: External_IP_of_ingress_controller
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            serviceName: springboot-starterkit-svc
+            servicePort: 80
+  tls: [ ]
+
+
+resources: { }
+
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+
+nodeSelector: { }
+
+
+tolerations: [ ]
+
+
+affinity: { }
