@@ -1,7 +1,9 @@
 package com.spring.jwt.validator.controller;
 
 import com.spring.jwt.validator.model.*;
-import com.spring.jwt.validator.repository.UserRepository;
+import com.spring.jwt.validator.model.DTO.LoginUserDto;
+import com.spring.jwt.validator.model.DTO.RegisterUserDto;
+import com.spring.jwt.validator.model.DTO.UserDTO;
 import com.spring.jwt.validator.service.AuthenticationService;
 import com.spring.jwt.validator.service.JwtService;
 import jakarta.validation.Valid;
@@ -10,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "v1/base")
@@ -23,7 +23,6 @@ public class JwtValidadorController {
 
     private final AuthenticationService authenticationService;
 
-    private final UserRepository userRepository;
 
     // get allow list
     @GetMapping("/retrieve")
@@ -32,8 +31,6 @@ public class JwtValidadorController {
         return "it works too";
 
     }
-
-
 
     // login new user and validate jwt generated
     @PostMapping("/login")

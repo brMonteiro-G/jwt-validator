@@ -2,11 +2,10 @@ package com.spring.jwt.validator.service;
 
 import com.spring.jwt.validator.exceptions.UserNotFoundException;
 import com.spring.jwt.validator.mapper.UserMapper;
-import com.spring.jwt.validator.model.LoginUserDto;
-import com.spring.jwt.validator.model.RegisterUserDto;
-import com.spring.jwt.validator.model.UserDTO;
+import com.spring.jwt.validator.model.DTO.LoginUserDto;
+import com.spring.jwt.validator.model.DTO.RegisterUserDto;
+import com.spring.jwt.validator.model.DTO.UserDTO;
 import com.spring.jwt.validator.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

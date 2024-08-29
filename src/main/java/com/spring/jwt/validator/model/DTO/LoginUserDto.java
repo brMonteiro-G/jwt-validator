@@ -1,4 +1,4 @@
-package com.spring.jwt.validator.model;
+package com.spring.jwt.validator.model.DTO;
 
 import lombok.Getter;
 import lombok.Setter;

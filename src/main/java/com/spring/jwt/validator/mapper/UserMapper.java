@@ -1,7 +1,7 @@
 package com.spring.jwt.validator.mapper;
 
 import com.spring.jwt.validator.model.User;
-import com.spring.jwt.validator.model.UserDTO;
+import com.spring.jwt.validator.model.DTO.UserDTO;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 

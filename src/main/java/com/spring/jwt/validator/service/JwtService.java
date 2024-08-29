@@ -1,5 +1,6 @@
 package com.spring.jwt.validator.service;
 
+import com.spring.jwt.validator.model.DTO.UserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -32,12 +33,16 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(UserDTO userDto) {
+        var claims = new HashMap<String, Object>();
+        claims.put("Role", "Role");
+        claims.put("Name", "Name");
+        claims.put("Seed", "Seed");
+        return generateToken(claims, userDto);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+    public String generateToken(Map<String, Object> extraClaims, UserDTO userDto) {
+        return buildToken(extraClaims, userDto, jwtExpiration);
     }
 
     public long getExpirationTime() {
@@ -46,13 +51,13 @@ public class JwtService {
 
     private String buildToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails,
+            UserDTO userDto,
             long expiration
     ) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(userDto.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
