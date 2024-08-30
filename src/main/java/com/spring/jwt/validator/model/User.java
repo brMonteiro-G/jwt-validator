@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 
 @Builder
 @AllArgsConstructor
@@ -31,5 +33,13 @@ public class User {
     @DynamoDBAttribute
     private String password;
 
+    @DynamoDBAttribute
+    private Map<String, String> role;
+
+    @DynamoDBAttribute
+    private Map<String, String> seed;
+
+    @DynamoDBAttribute
+    private Map<String, String> name;
 
 }

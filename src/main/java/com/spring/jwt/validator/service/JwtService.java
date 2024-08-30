@@ -1,5 +1,7 @@
 package com.spring.jwt.validator.service;
 
+import com.spring.jwt.validator.exception.InvalidClaimNameException;
+import com.spring.jwt.validator.exception.OversizeClaimException;
 import com.spring.jwt.validator.model.DTO.UserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,11 +17,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
+
+import static com.spring.jwt.validator.service.AuthenticationService.grantSeed;
 
 @Service
 public class JwtService {
+
     @Value("${security.jwt.secret-key}")
     private String secretKey;
+
 
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
@@ -30,33 +37,29 @@ public class JwtService {
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+
+        return isClaimValid(claims) ? claimsResolver.apply(claims): null;
     }
 
     public String generateToken(UserDTO userDto) {
-        var claims = new HashMap<String, Object>();
-        claims.put("Role", "Role");
-        claims.put("Name", "Name");
-        claims.put("Seed", "Seed");
-        return generateToken(claims, userDto);
+
+        return buildToken(userDto, jwtExpiration);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDTO userDto) {
-        return buildToken(extraClaims, userDto, jwtExpiration);
-    }
 
     public long getExpirationTime() {
         return jwtExpiration;
     }
 
     private String buildToken(
-            Map<String, Object> extraClaims,
             UserDTO userDto,
             long expiration
     ) {
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
+                .setClaims(userDto.getRole())
+                .setClaims(userDto.getSeed())
+                .setClaims(userDto.getName())
                 .setSubject(userDto.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
@@ -87,7 +90,25 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
+        //TODO: isn´t a good practice use a human readble seed, usually we use base 64 secret, but here we go
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+
+    private boolean isClaimValid(Claims claims) {
+
+        String nameClaim = claims.get("Name", String.class);
+        if (Pattern.compile("[0-9]").matcher(nameClaim).find()) {
+            throw new InvalidClaimNameException("Claim 'Name' must have only alphabetic letter.");
+        }
+
+        if (claims.size() > 3) {
+            throw new OversizeClaimException("JWT cannot contains more than 3 claims");
+        }
+
+        return true;
+    }
+
+
 }
