@@ -2,13 +2,10 @@ package com.spring.jwt.validator.mapper;
 
 import com.spring.jwt.validator.model.DTO.RegisterUserDto;
 import com.spring.jwt.validator.model.DTO.UserDTO;
-import com.spring.jwt.validator.model.Role;
-import com.spring.jwt.validator.model.Seed;
 import com.spring.jwt.validator.model.User;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -50,6 +47,8 @@ public class UserMapper {
                 .fullName(user.getFullName())
                 .password(user.getPassword())
                 .role(user.getRole())
+                .seed(user.getSeed())
+                .name(user.getName())
                 .build();
 
     }

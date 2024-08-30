@@ -1,14 +1,11 @@
 package com.spring.jwt.validator.service;
 
 import com.spring.jwt.validator.enums.AllowedRoles;
-import com.spring.jwt.validator.exceptions.UserNotFoundException;
+import com.spring.jwt.validator.exception.UserNotFoundException;
 import com.spring.jwt.validator.mapper.UserMapper;
 import com.spring.jwt.validator.model.DTO.LoginUserDto;
 import com.spring.jwt.validator.model.DTO.RegisterUserDto;
 import com.spring.jwt.validator.model.DTO.UserDTO;
-import com.spring.jwt.validator.model.Name;
-import com.spring.jwt.validator.model.Role;
-import com.spring.jwt.validator.model.Seed;
 import com.spring.jwt.validator.model.User;
 import com.spring.jwt.validator.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +20,6 @@ import java.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -44,6 +40,7 @@ public class AuthenticationService {
         registerUserDto.setRole(role);
         registerUserDto.setSeed(seed);
         registerUserDto.setName(name);
+        registerUserDto.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
 
         User user = UserMapper.convert(registerUserDto);
         userRepository.createCustomer(user);

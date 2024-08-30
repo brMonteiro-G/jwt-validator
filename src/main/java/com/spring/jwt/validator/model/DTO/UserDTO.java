@@ -1,9 +1,5 @@
 package com.spring.jwt.validator.model.DTO;
 
-import com.spring.jwt.validator.model.Name;
-import com.spring.jwt.validator.model.Role;
-import com.spring.jwt.validator.model.Seed;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

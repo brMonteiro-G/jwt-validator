@@ -1,9 +1,6 @@
 package com.spring.jwt.validator.model.DTO;
 
 
-import com.spring.jwt.validator.model.Role;
-import com.spring.jwt.validator.model.Seed;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
