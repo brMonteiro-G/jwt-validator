@@ -3,6 +3,7 @@ package com.spring.jwt.validator.model.DTO;
 import com.spring.jwt.validator.model.Name;
 import com.spring.jwt.validator.model.Role;
 import com.spring.jwt.validator.model.Seed;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,15 +21,11 @@ public class UserDTO implements UserDetails {
     private String fullName;
     private String email;
     private String password;
-    private String category;
 
-    Map<String, Name> claims;
+    Map<String, String> seed ;
+    Map<String, String> name ;
 
-    Map<String, Role> seed;
-
-    Map<String, Seed> role;
-
-
+    Map<String, String> role;
 
 
     @Override

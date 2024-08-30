@@ -16,10 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.spring.jwt.validator.service.AuthenticationService.grantSeed;
+
 @Service
 public class JwtService {
-    @Value("${security.jwt.secret-key}")
-    private String secretKey;
 
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
@@ -34,33 +34,28 @@ public class JwtService {
     }
 
     public String generateToken(UserDTO userDto) {
-        var claims = new HashMap<String, Object>();
-        claims.put("Role", "Role");
-        claims.put("Name", "Name");
-        claims.put("Seed", "Seed");
-        return generateToken(claims, userDto);
-    }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDTO userDto) {
-        return buildToken(extraClaims, userDto, jwtExpiration);
-    }
+        return buildToken(userDto, jwtExpiration);    }
+
+
 
     public long getExpirationTime() {
         return jwtExpiration;
     }
 
     private String buildToken(
-            Map<String, Object> extraClaims,
             UserDTO userDto,
             long expiration
     ) {
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
+                .setClaims(userDto.getRole())
+                .setClaims(userDto.getSeed())
+                .setClaims(userDto.getName())
                 .setSubject(userDto.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .signWith(getSignInKey(userDto.getSeed()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -80,14 +75,15 @@ public class JwtService {
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
-                .setSigningKey(getSignInKey())
+               .setSigningKey(getSignInKey(grantSeed()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+    private Key getSignInKey(Map<String, String> seed) {
+        //TODO: isn´t a good practice use a human readble seed, usually we use base 64 secret, but here we go
+        byte[] keyBytes = seed.get("Seed").getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
