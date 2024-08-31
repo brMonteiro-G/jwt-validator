@@ -38,7 +38,7 @@ public class JwtService {
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
 
-        return isClaimValid(claims) ? claimsResolver.apply(claims): null;
+        return claimsResolver.apply(claims);
     }
 
     public String generateToken(UserDTO userDto) {
@@ -53,16 +53,20 @@ public class JwtService {
 
     private String buildToken(
             UserDTO userDto,
+
+            //TODO: add expiration
             long expiration
     ) {
+        Map<String, String> mapClaims = new HashMap();
+
+        //TODO: improve it later
+        mapClaims.put("Name",userDto.getName().get("Name").toString());
+        mapClaims.put("Seed",userDto.getSeed().get("Seed").toString());
+        mapClaims.put("Role",userDto.getRole().get("ROLE").toString());
+
         return Jwts
                 .builder()
-                .setClaims(userDto.getRole())
-                .setClaims(userDto.getSeed())
-                .setClaims(userDto.getName())
-                .setSubject(userDto.getEmail())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setClaims(mapClaims)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -95,20 +99,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-
-    private boolean isClaimValid(Claims claims) {
-
-        String nameClaim = claims.get("Name", String.class);
-        if (Pattern.compile("[0-9]").matcher(nameClaim).find()) {
-            throw new InvalidClaimNameException("Claim 'Name' must have only alphabetic letter.");
-        }
-
-        if (claims.size() > 3) {
-            throw new OversizeClaimException("JWT cannot contains more than 3 claims");
-        }
-
-        return true;
-    }
 
 
 }
