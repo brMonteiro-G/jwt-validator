@@ -46,15 +46,23 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: jwt-validator
           IMAGE_TAG: ${{ github.sha }}
-          GIT_SECRET_PRIVATE_KEY: ${{ secrets.GIT_SECRET_PRIVATE_KEY }}
-          GIT_SECRET_PASSWORD: ${{ secrets.GIT_SECRET_PASSWORD }}
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
-          --build-arg GIT_SECRET_PRIVATE_KEY="$GIT_SECRET_PRIVATE_KEY" \
-          --build-arg GIT_SECRET_PASSWORD="$GIT_SECRET_PASSWORD" \
-          --no-cache --progress=plain .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
+      - name: 🚀 Deploy and start container
+        uses: appleboy/ssh-action@v1.0.3
+
+        with:
+          host: ${{ secrets.HOSTNAME }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SECRET_SSH_KEY }}
+          script: |
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.${{ secrets.ECR_REGISTRY }}
+            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.${{ secrets.ECR_REGISTRY }}/jwt-validator:${{ github.sha }} 
+            docker stop jwt-validator
+            docker rm jwt-validator
+            docker run -d --name jwt-validator -p ${{ secrets.PORT }}:${{ secrets.PORT }} ${{ secrets.AWS_ACCOUNT_ID }}.${{ secrets.ECR_REGISTRY }}/jwt-validator:${{ github.sha }}
 
       - name: 🏗️ Revoke runner ip address
         if: ${{ always() && steps.whitelist-ip.conclusion == 'success' }}
