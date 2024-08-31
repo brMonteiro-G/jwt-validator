@@ -1,12 +1,13 @@
-package com.spring.jwt.validator.model;
+package com.spring.jwt.validator.model.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
+import java.util.*;
 
 @Builder
 @Data
@@ -14,16 +15,22 @@ import java.util.Collection;
 public class UserDTO implements UserDetails {
 
     private String fullName;
-
     private String email;
-
     private String password;
-    private String category;
+
+    Map<String, String> seed ;
+    Map<String, String> name ;
+
+    Map<String, String> role;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<GrantedAuthority> list = new ArrayList<>();
+
+        list.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+        return list;
     }
 
     @Override

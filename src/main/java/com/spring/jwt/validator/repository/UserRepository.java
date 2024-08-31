@@ -5,12 +5,10 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.spring.jwt.validator.mapper.UserMapper;
 import com.spring.jwt.validator.model.User;
-import com.spring.jwt.validator.model.UserDTO;
+import com.spring.jwt.validator.model.DTO.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
