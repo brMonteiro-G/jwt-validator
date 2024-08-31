@@ -47,10 +47,8 @@ jobs:
           REPOSITORY: jwt-validator
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          echo $REGISTRY
-          echo $REPOSITORY
-          echo $IMAGE_TAG
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+          --no-cache --progress=plain .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: 🚀 Deploy and start container
