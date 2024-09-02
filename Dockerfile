@@ -14,4 +14,4 @@ WORKDIR app
 COPY --from=build target/*.jar jwt-validator.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","jwt-validator.jar", "-Dspring.profiles.active=prd"]
+ENTRYPOINT ["java","-jar","jwt-validator.jar", "-Dspring.profiles.active=prod"]
