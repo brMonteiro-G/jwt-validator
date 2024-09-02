@@ -42,4 +42,5 @@ public class User {
     @DynamoDBAttribute
     private Map<String, String> name;
 
+
 }
