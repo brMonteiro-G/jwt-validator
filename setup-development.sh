@@ -4,7 +4,7 @@ docker compose -f ./src/main/resources/docker-compose.yml up -d
 
 # -- > Create DynamoDb Table
 echo Creating  DynamoDb \'Users\' table ...
-aws dynamodb create-table  --cli-input-json \
+aws dynamodb create-table  --endpoint-url http://127.0.0.1:4566  --cli-input-json \
  '{
     "TableName": "Users",
     "AttributeDefinitions": [
