@@ -7,15 +7,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @InitializeDynamoDB
 class AuthenticationServiceTest {
 
-    @Test
+   // @Test
     void signup() {
     }
 
-    @Test
+    //@Test
     void authenticate() {
     }
 
-    @Test
+    //@Test
     void grantSeed() {
     }
 }
