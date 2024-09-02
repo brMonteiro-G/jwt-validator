@@ -5,6 +5,7 @@ import com.spring.jwt.validator.exception.UserNotFoundException;
 import com.spring.jwt.validator.mapper.UserMapper;
 import com.spring.jwt.validator.model.DTO.LoginUserDto;
 import com.spring.jwt.validator.model.DTO.RegisterUserDto;
+import com.spring.jwt.validator.model.DTO.SignupResponseDto;
 import com.spring.jwt.validator.model.DTO.UserDTO;
 import com.spring.jwt.validator.model.User;
 import com.spring.jwt.validator.repository.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.apache.commons.math3.primes.Primes;
 
+import java.util.List;
 import java.util.Random;
 
 import java.util.HashMap;
@@ -30,13 +32,11 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    public User signup(RegisterUserDto registerUserDto) {
+    public SignupResponseDto signup(RegisterUserDto registerUserDto) {
 
-
-        //creating my business rule based on email: if email == *.gmail (ADMIN) | if email == *.hotmail (MEMBER) | if email != (*.gmail | *.hotmail) (EXTERNAL)
         var role = this.grantClaims(registerUserDto);
-        var name = this.grantName(registerUserDto); // name == username
-        var seed = this.grantSeed();  // seed == randomNumber until 6 numbers
+        var name = this.grantName(registerUserDto);
+        var seed = this.grantSeed();
         registerUserDto.setRole(role);
         registerUserDto.setSeed(seed);
         registerUserDto.setName(name);
@@ -45,8 +45,7 @@ public class AuthenticationService {
         User user = UserMapper.convert(registerUserDto);
         userRepository.createCustomer(user);
 
-        //TODO: create a response DTO
-        return user;
+        return new SignupResponseDto("User created with success", user.getEmail(), List.of("app-extrato-1", "datadog-app-extrato"));
     }
 
     public UserDTO authenticate(LoginUserDto input) {
@@ -60,6 +59,12 @@ public class AuthenticationService {
         var user = userRepository.getCustomerById(input.getEmail()).orElseThrow(UserNotFoundException::new);
         var newUser = UserMapper.convert(user);
         return UserMapper.convertUserToUserDTO(newUser);
+    }
+
+    public List<User> getAllAccess() {
+
+        return userRepository.getAllUsers();
+
     }
 
     private Map<String, String> grantClaims(RegisterUserDto user) {
@@ -81,7 +86,7 @@ public class AuthenticationService {
 
     }
 //TODO: Don´t forget to fix it
-    public static Map<String, String> grantSeed() {
+    public Map<String, String> grantSeed() {
 
         Map<String, String> seed = new HashMap<>();
         Random random = new Random();

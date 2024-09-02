@@ -18,10 +18,10 @@ public class UserDTO implements UserDetails {
     private String email;
     private String password;
 
-    Map<String, String> seed ;
-    Map<String, String> name ;
+    private Map<String, String> seed ;
+    private Map<String, String> name ;
 
-    Map<String, String> role;
+    private Map<String, String> role;
 
 
     @Override
