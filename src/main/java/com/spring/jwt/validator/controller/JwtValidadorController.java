@@ -1,10 +1,11 @@
 package com.spring.jwt.validator.controller;
 
-import com.spring.jwt.validator.model.*;
+import com.spring.jwt.validator.model.AllowedResourcesResponse;
 import com.spring.jwt.validator.model.DTO.LoginUserDto;
 import com.spring.jwt.validator.model.DTO.RegisterUserDto;
 import com.spring.jwt.validator.model.DTO.SignupResponseDto;
 import com.spring.jwt.validator.model.DTO.UserDTO;
+import com.spring.jwt.validator.model.LoginResponse;
 import com.spring.jwt.validator.service.AuthenticationService;
 import com.spring.jwt.validator.service.JwtService;
 import jakarta.validation.Valid;
@@ -15,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -31,35 +31,38 @@ public class JwtValidadorController {
 
     // get allow list
     @GetMapping("/retrieve")
-    // to do  @PreAuthorize("isFullyAuthenticated() and hasAuthority('admin')")
-    public String myFisrtControllerGet() {
-        return "it works too";
+    // @PreAuthorize("isFullyAuthenticated() and hasRole('admin')")
+    public ResponseEntity<AllowedResourcesResponse> getAllowList() {
+        var allAccess = authenticationService.getAllAccess();
+        AllowedResourcesResponse response = new AllowedResourcesResponse();
+        response.setAllowedResources(List.of("write-app-2", "read-extrato-1"));
+        response.setListUser(allAccess);
+
+        return ResponseEntity.ok(response);
 
     }
 
     // login new user and validate jwt generated
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticate(@RequestBody @Valid LoginUserDto loginUserDto) {
-        UserDTO authenticatedUser = authenticationService.authenticate(loginUserDto);
 
-        String jwtToken = jwtService.generateToken(authenticatedUser);
+        UserDTO user = authenticationService.authenticate(loginUserDto);
+        log.info("user found in database {}", user.getName());
 
-        LoginResponse loginResponse = LoginResponse.builder().token(jwtToken).expiresIn(jwtService.getExpirationTime()).build();
-
-        return ResponseEntity.ok(loginResponse);
+        LoginResponse authenticatedUser = jwtService.generatedAuthenticatedUser(user);
+        log.info("retrieving token for user {}", user.getName());
+        return ResponseEntity.ok(authenticatedUser);
     }
-
 
 
     // register new user
     @PostMapping("/signup")
     public ResponseEntity<SignupResponseDto> register(@RequestBody @Valid RegisterUserDto registerUserDto) {
 
-        var registeredUser = authenticationService.signup(registerUserDto);
+        SignupResponseDto registeredUser = authenticationService.signup(registerUserDto);
+        log.info("register user in database {}", registeredUser.getEmail());
 
-        var response = new SignupResponseDto("User created with success",registeredUser.getEmail(), List.of("test"));
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
 
 

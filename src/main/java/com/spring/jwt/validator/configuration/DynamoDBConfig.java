@@ -22,15 +22,6 @@ public class DynamoDBConfig {
     private String awsRegion;
 
 
-    @Value("${aws.accessKey}")
-    private String amazonAWSAccessKey;
-
-    @Value("${aws.secretKey}")
-    private String amazonAWSSecretKey;
-
-    @Value("${aws.sessionToken}")
-    private String amazonAWSSessionToken;
-
     @Bean
     public DynamoDBMapper dynamoDBMapper() {
         return new DynamoDBMapper(buildAmazonDynamoDB());

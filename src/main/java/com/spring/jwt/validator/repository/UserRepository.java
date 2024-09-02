@@ -42,6 +42,18 @@ public class UserRepository {
         return Optional.ofNullable(user);
     }
 
+    public List<User> getAllUsers() {
+
+        List<User> usersFromDatabase = new ArrayList<>(dynamoDBMapper.scan(User.class, new DynamoDBScanExpression()));
+
+        usersFromDatabase.forEach(UserMapper::convertUserToUserDTO);
+
+        return usersFromDatabase;
+    }
+
+
+
+
     public User updateCustomer(String id, User customer) {
         User load = dynamoDBMapper.load(User.class, id);
         // map these two entity

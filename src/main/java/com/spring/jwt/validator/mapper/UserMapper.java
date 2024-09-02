@@ -53,5 +53,18 @@ public class UserMapper {
 
     }
 
+    public static UserDTO convertUserDtoToAllowedResources(User user) {
+
+        return UserDTO.builder()
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .seed(user.getSeed())
+                .name(user.getName())
+                .build();
+
+    }
+
 
 }

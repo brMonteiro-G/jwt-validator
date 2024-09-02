@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Component
@@ -60,7 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             final String jwt = authHeader.substring(7);
 
-            var claims = this.getClaims(jwt);
+            var claims = this.getClaims(jwt).orElseThrow(() -> new MalformedJwtException("Invalid Jwt"));
             final String userEmail = isClaimValid(claims) ? jwtService.extractUsername(jwt) : null;
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -83,26 +84,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (Exception exception) {
 
-            if (exception instanceof MalformedJwtException) {
+            this.handleException(request, response, exception);
 
-                handlerExceptionResolver.commence(request, response, new InvalidJwtException("invalid or malformed JWT token"));
-            }
+        }
+    }
 
-            if (exception instanceof ExpiredJwtException) {
-                handlerExceptionResolver.commence(request, response, new InvalidJwtException("expired JWT"));
-            }
-
-            if (exception instanceof OversizeClaimException) {
-                handlerExceptionResolver.commence(request, response, new InvalidJwtException("invalid claims"));
-            }
-
-            if (exception instanceof InvalidClaimNameException) {
-                handlerExceptionResolver.commence(request, response, new InvalidJwtException("invalid claim name"));
-            }
-
-            logger.error("there is an error while filter JWT token");
-//            throw new RuntimeException();
-
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException, ServletException {
+        if (exception instanceof MalformedJwtException) {
+            handlerExceptionResolver.commence(request, response, new InvalidJwtException("Invalid or malformed JWT token"));
+        } else if (exception instanceof ExpiredJwtException) {
+            handlerExceptionResolver.commence(request, response, new InvalidJwtException("Expired JWT"));
+        } else if (exception instanceof OversizeClaimException) {
+            handlerExceptionResolver.commence(request, response, new InvalidJwtException("Invalid claims"));
+        } else if (exception instanceof InvalidClaimNameException) {
+            handlerExceptionResolver.commence(request, response, new InvalidJwtException("Invalid claim name"));
+        } else {
+            logger.error("Error filtering JWT token", exception);
         }
     }
 
@@ -121,7 +118,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
 
-    private HashMap<String, String> getClaims(String token) throws JsonProcessingException {
+    private Optional<HashMap<String, String>> getClaims(String token) throws JsonProcessingException {
         String[] tokenParts = token.split("\\.");
         String payload = tokenParts[1];
 
@@ -129,7 +126,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String decodedPayload = new String(decodedBytes);
 
         HashMap<String, String> map = objectMapper.readValue(decodedPayload, HashMap.class);
-        return map;
+        return Optional.ofNullable(map);
     }
 
 }

@@ -1,8 +1,7 @@
 package com.spring.jwt.validator.service;
 
-import com.spring.jwt.validator.exception.InvalidClaimNameException;
-import com.spring.jwt.validator.exception.OversizeClaimException;
 import com.spring.jwt.validator.model.DTO.UserDTO;
+import com.spring.jwt.validator.model.LoginResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -17,9 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
-import static com.spring.jwt.validator.service.AuthenticationService.grantSeed;
 
 @Service
 public class JwtService {
@@ -41,9 +38,10 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDTO userDto) {
+    public LoginResponse generatedAuthenticatedUser(UserDTO userDto) {
+        var token = buildToken(userDto, jwtExpiration);
 
-        return buildToken(userDto, jwtExpiration);
+        return LoginResponse.builder().token(token).expiresIn(jwtExpiration).build();
     }
 
 
@@ -60,9 +58,9 @@ public class JwtService {
         Map<String, String> mapClaims = new HashMap();
 
         //TODO: improve it later
-        mapClaims.put("Name",userDto.getName().get("Name").toString());
-        mapClaims.put("Seed",userDto.getSeed().get("Seed").toString());
-        mapClaims.put("Role",userDto.getRole().get("ROLE").toString());
+        mapClaims.put("Name", userDto.getName().get("Name").toString());
+        mapClaims.put("Seed", userDto.getSeed().get("Seed").toString());
+        mapClaims.put("Role", userDto.getRole().get("ROLE").toString());
 
         return Jwts
                 .builder()
@@ -98,7 +96,6 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 
 
 }
