@@ -3,6 +3,7 @@ package com.spring.jwt.validator.configuration;
 import com.amazonaws.auth.*;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
@@ -21,6 +22,11 @@ public class DynamoDBConfig {
     @Value("${aws.region}")
     private String awsRegion;
 
+    @Value("aws.accessKey")
+    private String accessKey;
+
+    @Value("aws.secretKey")
+    private String secretKey;
 
     @Bean
     public DynamoDBMapper dynamoDBMapper() {
@@ -36,11 +42,11 @@ public class DynamoDBConfig {
                                 awsRegion
                         )
                 )
-                .withCredentials(
-                        new AWSStaticCredentialsProvider(
-                                WebIdentityTokenCredentialsProvider.create().getCredentials()
-                        )
-                )
+                .withCredentials(new AWSStaticCredentialsProvider(
+                        new BasicAWSCredentials(
+                                accessKey,
+                                secretKey
+                        )))
                 .build();
     }
 

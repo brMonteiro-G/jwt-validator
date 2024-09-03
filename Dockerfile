@@ -1,5 +1,10 @@
 FROM openjdk:17-jdk-alpine AS build
 
+ARG ACCESS_KEY
+ENV ACCESS_KEY=$ACCESS_KEY
+
+ARG SECRET_KEY
+ENV SECRET_KEY=$SECRET_KEY
 
 COPY pom.xml mvnw ./
 COPY .mvn .mvn
