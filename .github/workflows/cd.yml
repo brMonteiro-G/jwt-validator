@@ -63,7 +63,10 @@ jobs:
             docker pull ${{ secrets.AWS_ACCOUNT_ID }}.${{ secrets.ECR_REGISTRY }}/jwt-validator:${{ github.sha }} 
             docker stop jwt-validator
             docker rm jwt-validator
-            docker run -d --name jwt-validator -p ${{ secrets.PORT }}:${{ secrets.PORT }} ${{ secrets.AWS_ACCOUNT_ID }}.${{ secrets.ECR_REGISTRY }}/jwt-validator:${{ github.sha }}
+            docker run -d --name jwt-validator -p ${{ secrets.PORT }}:${{ secrets.PORT }} \
+            ${{ secrets.AWS_ACCOUNT_ID }}.${{ secrets.ECR_REGISTRY }}/jwt-validator:${{ github.sha }} \
+            -e ACCESS_KEY=${{ secrets.ACCESS_KEY }} \
+            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
 
       - name: 🏗️ Revoke runner ip address
         if: ${{ always() && steps.whitelist-ip.conclusion == 'success' }}
