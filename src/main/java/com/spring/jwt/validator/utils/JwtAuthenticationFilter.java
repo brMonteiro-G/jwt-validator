@@ -1,5 +1,6 @@
 package com.spring.jwt.validator.utils;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.jwt.validator.exception.InvalidClaimNameException;
@@ -14,6 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,18 +34,13 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private DelegatedAuthenticationEntryPoint handlerExceptionResolver;
-    @Autowired
-
-    private JwtService jwtService;
-    @Autowired
-
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final DelegatedAuthenticationEntryPoint handlerExceptionResolver;
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(
@@ -90,7 +87,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException, ServletException {
-        if (exception instanceof MalformedJwtException) {
+        if (exception instanceof MalformedJwtException || exception instanceof JsonParseException) {
             handlerExceptionResolver.commence(request, response, new InvalidJwtException("Invalid or malformed JWT token"));
         } else if (exception instanceof ExpiredJwtException) {
             handlerExceptionResolver.commence(request, response, new InvalidJwtException("Expired JWT"));
